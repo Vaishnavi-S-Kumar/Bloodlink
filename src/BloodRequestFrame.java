@@ -1,5 +1,8 @@
 import javax.swing.*;
 import java.awt.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 
 public class BloodRequestFrame extends JFrame {
 
@@ -33,7 +36,7 @@ public class BloodRequestFrame extends JFrame {
                 new BoxLayout(requestPanel, BoxLayout.Y_AXIS)
         );
 
-        JLabel heading = new JLabel("Emergency Blood Requests");
+        JLabel heading = new JLabel("Active Blood Requests");
         heading.setFont(new Font("Arial", Font.BOLD, 24));
         heading.setAlignmentX(Component.CENTER_ALIGNMENT);
 
@@ -41,27 +44,7 @@ public class BloodRequestFrame extends JFrame {
         requestPanel.add(heading);
         requestPanel.add(Box.createVerticalStrut(25));
 
-        // Request 1
-        JPanel request1 = createRequest(
-                "City Hospital",
-                "O+",
-                "2 Units",
-                "Urgent",
-                "Kollam"
-        );
-
-        // Request 2
-        JPanel request2 = createRequest(
-                "General Hospital",
-                "B+",
-                "1 Unit",
-                "Emergency",
-                "Thiruvananthapuram"
-        );
-
-        requestPanel.add(request1);
-        requestPanel.add(Box.createVerticalStrut(15));
-        requestPanel.add(request2);
+        loadRequests(requestPanel);
 
         JScrollPane scrollPane =
                 new JScrollPane(requestPanel);
@@ -74,7 +57,87 @@ public class BloodRequestFrame extends JFrame {
         add(mainPanel);
     }
 
-    JPanel createRequest(
+    private void loadRequests(JPanel requestPanel) {
+
+        String sql =
+                "SELECT br.request_id, h.hospital_name, "
+                + "br.blood_group, br.units_required, "
+                + "br.priority, br.location "
+                + "FROM blood_requests br "
+                + "JOIN hospitals h ON br.hospital_id = h.hospital_id "
+                + "WHERE br.request_status = 'ACTIVE' "
+                + "ORDER BY br.created_at DESC";
+
+        try (
+                Connection con = DBConnection.getConnection();
+                PreparedStatement pst = con.prepareStatement(sql);
+                ResultSet rs = pst.executeQuery()
+        ) {
+
+            boolean found = false;
+
+            while (rs.next()) {
+
+                found = true;
+
+                int requestId = rs.getInt("request_id");
+                String hospital = rs.getString("hospital_name");
+                String bloodGroup = rs.getString("blood_group");
+                int units = rs.getInt("units_required");
+                String priority = rs.getString("priority");
+                String location = rs.getString("location");
+
+                JPanel requestPanelItem = createRequest(
+                        requestId,
+                        hospital,
+                        bloodGroup,
+                        units + " Unit(s)",
+                        priority,
+                        location
+                );
+
+                requestPanel.add(requestPanelItem);
+                requestPanel.add(Box.createVerticalStrut(15));
+            }
+
+            if (!found) {
+
+                JLabel noRequests =
+                        new JLabel("No active blood requests at the moment.");
+
+                noRequests.setFont(
+                        new Font("Arial", Font.PLAIN, 16)
+                );
+
+                noRequests.setAlignmentX(
+                        Component.CENTER_ALIGNMENT
+                );
+
+                requestPanel.add(noRequests);
+            }
+
+        } catch (Exception ex) {
+
+            JLabel errorLabel =
+                    new JLabel(
+                            "Unable to load blood requests."
+                    );
+
+            errorLabel.setAlignmentX(
+                    Component.CENTER_ALIGNMENT
+            );
+
+            requestPanel.add(errorLabel);
+
+            System.out.println(
+                    "Error loading requests: "
+                    + ex.getMessage()
+            );
+        }
+    }
+
+    private JPanel createRequest(
+            int requestId,
             String hospital,
             String bloodGroup,
             String units,
@@ -82,12 +145,19 @@ public class BloodRequestFrame extends JFrame {
             String location) {
 
         JPanel panel = new JPanel(new BorderLayout());
-        panel.setBackground(new Color(248, 248, 248));
+
+        panel.setBackground(
+                new Color(248, 248, 248)
+        );
 
         panel.setBorder(
                 BorderFactory.createCompoundBorder(
-                        BorderFactory.createLineBorder(Color.LIGHT_GRAY),
-                        BorderFactory.createEmptyBorder(12, 15, 12, 15)
+                        BorderFactory.createLineBorder(
+                                Color.LIGHT_GRAY
+                        ),
+                        BorderFactory.createEmptyBorder(
+                                12, 15, 12, 15
+                        )
                 )
         );
 
@@ -110,18 +180,12 @@ public class BloodRequestFrame extends JFrame {
 
         acceptButton.addActionListener(e -> {
 
-            JOptionPane.showMessageDialog(
-                    this,
-                    "You have accepted the blood request."
-            );
+            saveResponse(requestId, "ACCEPTED");
         });
 
         declineButton.addActionListener(e -> {
 
-            JOptionPane.showMessageDialog(
-                    this,
-                    "You have declined the blood request."
-            );
+            saveResponse(requestId, "DECLINED");
         });
 
         JPanel buttonPanel = new JPanel();
@@ -141,5 +205,46 @@ public class BloodRequestFrame extends JFrame {
         );
 
         return panel;
+    }
+
+    private void saveResponse(
+            int requestId,
+            String response) {
+
+        // Test donor ID
+        int donorId = 1;
+
+        String sql =
+                "INSERT INTO donor_responses "
+                + "(request_id, donor_id, response) "
+                + "VALUES (?, ?, ?) "
+                + "ON DUPLICATE KEY UPDATE "
+                + "response = VALUES(response)";
+
+        try (
+                Connection con = DBConnection.getConnection();
+                PreparedStatement pst =
+                        con.prepareStatement(sql)
+        ) {
+
+            pst.setInt(1, requestId);
+            pst.setInt(2, donorId);
+            pst.setString(3, response);
+
+            pst.executeUpdate();
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Your response has been recorded."
+            );
+
+        } catch (Exception ex) {
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Unable to record your response.\n"
+                    + ex.getMessage()
+            );
+        }
     }
 }
