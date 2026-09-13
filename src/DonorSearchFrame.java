@@ -17,7 +17,6 @@ public class DonorSearchFrame extends JPanel {
         mainPanel.setBackground(Color.WHITE);
 
         // Top bar
-
         JPanel topPanel = new JPanel(new BorderLayout());
         topPanel.setBackground(darkRed);
         topPanel.setPreferredSize(
@@ -43,7 +42,6 @@ public class DonorSearchFrame extends JPanel {
         );
 
         // Search panel
-
         JPanel searchPanel =
                 new JPanel(
                         new GridLayout(
@@ -58,9 +56,9 @@ public class DonorSearchFrame extends JPanel {
 
         searchPanel.setBorder(
                 BorderFactory.createEmptyBorder(
-                        30,
+                        25,
                         80,
-                        20,
+                        15,
                         80
                 )
         );
@@ -126,7 +124,6 @@ public class DonorSearchFrame extends JPanel {
         searchPanel.add(eligibilityBox);
 
         // Search button
-
         JButton searchButton =
                 new JButton("SEARCH DONORS");
 
@@ -142,8 +139,15 @@ public class DonorSearchFrame extends JPanel {
                 )
         );
 
-        // Results
+        // Button panel
+        JPanel buttonPanel =
+                new JPanel();
 
+        buttonPanel.setBackground(Color.WHITE);
+
+        buttonPanel.add(searchButton);
+
+        // Results area
         JTextArea resultArea =
                 new JTextArea();
 
@@ -157,10 +161,58 @@ public class DonorSearchFrame extends JPanel {
                 )
         );
 
+        resultArea.setLineWrap(true);
+
+        resultArea.setWrapStyleWord(true);
+
         resultArea.setText(
                 "Search results will appear here."
         );
 
+        JScrollPane scrollPane =
+                new JScrollPane(resultArea);
+
+        // Controls panel
+        JPanel controlsPanel =
+                new JPanel(
+                        new BorderLayout()
+                );
+
+        controlsPanel.setBackground(Color.WHITE);
+
+        controlsPanel.add(
+                searchPanel,
+                BorderLayout.NORTH
+        );
+
+        controlsPanel.add(
+                buttonPanel,
+                BorderLayout.CENTER
+        );
+
+        // Results panel
+        JPanel resultsPanel =
+                new JPanel(
+                        new BorderLayout()
+                );
+
+        resultsPanel.setBackground(Color.WHITE);
+
+        resultsPanel.setBorder(
+                BorderFactory.createEmptyBorder(
+                        10,
+                        30,
+                        30,
+                        30
+                )
+        );
+
+        resultsPanel.add(
+                scrollPane,
+                BorderLayout.CENTER
+        );
+
+        // Search functionality
         searchButton.addActionListener(e -> {
 
             String bloodGroup =
@@ -183,23 +235,41 @@ public class DonorSearchFrame extends JPanel {
                             "FROM donors WHERE 1=1"
                     );
 
+            // Blood group filter
             if (!bloodGroup.equals("Any")) {
-                sql.append(" AND blood_group = ?");
+
+                sql.append(
+                        " AND blood_group = ?"
+                );
             }
 
+            // Location filter
             if (!location.isEmpty()) {
-                sql.append(" AND location LIKE ?");
+
+                sql.append(
+                        " AND location LIKE ?"
+                );
             }
 
+            // Availability filter
             if (!availability.equals("Any")) {
-                sql.append(" AND availability = ?");
+
+                sql.append(
+                        " AND availability = ?"
+                );
             }
 
+            // Eligibility filter
             if (!eligibility.equals("Any")) {
-                sql.append(" AND eligibility = ?");
+
+                sql.append(
+                        " AND eligibility = ?"
+                );
             }
 
-            sql.append(" ORDER BY name");
+            sql.append(
+                    " ORDER BY name"
+            );
 
             resultArea.setText("");
 
@@ -208,11 +278,14 @@ public class DonorSearchFrame extends JPanel {
                             DBConnection.getConnection();
 
                     PreparedStatement ps =
-                            con.prepareStatement(sql.toString())
+                            con.prepareStatement(
+                                    sql.toString()
+                            )
             ) {
 
                 int parameter = 1;
 
+                // Blood group parameter
                 if (!bloodGroup.equals("Any")) {
 
                     ps.setString(
@@ -221,6 +294,7 @@ public class DonorSearchFrame extends JPanel {
                     );
                 }
 
+                // Location parameter
                 if (!location.isEmpty()) {
 
                     ps.setString(
@@ -229,6 +303,7 @@ public class DonorSearchFrame extends JPanel {
                     );
                 }
 
+                // Availability parameter
                 if (!availability.equals("Any")) {
 
                     String dbAvailability =
@@ -242,6 +317,7 @@ public class DonorSearchFrame extends JPanel {
                     );
                 }
 
+                // Eligibility parameter
                 if (!eligibility.equals("Any")) {
 
                     String dbEligibility =
@@ -266,56 +342,56 @@ public class DonorSearchFrame extends JPanel {
 
                     resultArea.append(
                             "Donor ID: "
-                            + rs.getInt("donor_id")
-                            + "\n"
+                                    + rs.getInt("donor_id")
+                                    + "\n"
                     );
 
                     resultArea.append(
                             "Name: "
-                            + rs.getString("name")
-                            + "\n"
+                                    + rs.getString("name")
+                                    + "\n"
                     );
 
                     resultArea.append(
                             "Age: "
-                            + rs.getInt("age")
-                            + "\n"
+                                    + rs.getInt("age")
+                                    + "\n"
                     );
 
                     resultArea.append(
                             "Gender: "
-                            + rs.getString("gender")
-                            + "\n"
+                                    + rs.getString("gender")
+                                    + "\n"
                     );
 
                     resultArea.append(
                             "Blood Group: "
-                            + rs.getString("blood_group")
-                            + "\n"
+                                    + rs.getString("blood_group")
+                                    + "\n"
                     );
 
                     resultArea.append(
                             "Phone: "
-                            + rs.getString("phone")
-                            + "\n"
+                                    + rs.getString("phone")
+                                    + "\n"
                     );
 
                     resultArea.append(
                             "Location: "
-                            + rs.getString("location")
-                            + "\n"
+                                    + rs.getString("location")
+                                    + "\n"
                     );
 
                     resultArea.append(
                             "Availability: "
-                            + rs.getString("availability")
-                            + "\n"
+                                    + rs.getString("availability")
+                                    + "\n"
                     );
 
                     resultArea.append(
                             "Eligibility: "
-                            + rs.getString("eligibility")
-                            + "\n"
+                                    + rs.getString("eligibility")
+                                    + "\n"
                     );
 
                     resultArea.append(
@@ -334,47 +410,46 @@ public class DonorSearchFrame extends JPanel {
 
                 resultArea.setText(
                         "Failed to search donors.\n\n"
-                        + ex.getMessage()
+                                + ex.getMessage()
                 );
             }
         });
 
-        JPanel buttonPanel =
-                new JPanel();
-
-        buttonPanel.setBackground(Color.WHITE);
-
-        buttonPanel.add(searchButton);
-
-        JPanel centerPanel =
-                new JPanel(
-                        new BorderLayout()
-                );
-
-        centerPanel.setBackground(Color.WHITE);
-
-        centerPanel.add(
-                searchPanel,
-                BorderLayout.NORTH
-        );
-
-        centerPanel.add(
-                buttonPanel,
-                BorderLayout.CENTER
-        );
-
-        centerPanel.add(
-                new JScrollPane(resultArea),
-                BorderLayout.SOUTH
-        );
-
+        // Add top bar
         mainPanel.add(
                 topPanel,
                 BorderLayout.NORTH
         );
 
+        // Add search controls
         mainPanel.add(
-                centerPanel,
+                controlsPanel,
+                BorderLayout.CENTER
+        );
+
+        // Main layout with controls and results
+        JPanel contentPanel =
+                new JPanel(
+                        new BorderLayout()
+                );
+
+        contentPanel.setBackground(Color.WHITE);
+
+        contentPanel.add(
+                controlsPanel,
+                BorderLayout.NORTH
+        );
+
+        contentPanel.add(
+                resultsPanel,
+                BorderLayout.CENTER
+        );
+
+        // Replace duplicate center component
+        mainPanel.remove(controlsPanel);
+
+        mainPanel.add(
+                contentPanel,
                 BorderLayout.CENTER
         );
 
@@ -382,7 +457,6 @@ public class DonorSearchFrame extends JPanel {
     }
 
     // Compatibility method
-
     public Container getContentPane() {
         return this;
     }
