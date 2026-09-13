@@ -80,9 +80,14 @@ public class LoginFrame extends JFrame {
         );
 
         message.setForeground(Color.WHITE);
-        message.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        JPanel messagePanel = new JPanel();
+        messagePanel.setOpaque(false);
+        messagePanel.setLayout(new FlowLayout(FlowLayout.CENTER, 35, 0));
+        messagePanel.add(message);
 
         leftPanel.add(Box.createVerticalGlue());
+
         leftPanel.add(logo);
 
         leftPanel.add(
@@ -95,7 +100,7 @@ public class LoginFrame extends JFrame {
                 Box.createVerticalStrut(40)
         );
 
-        leftPanel.add(message);
+        leftPanel.add(messagePanel);
 
         leftPanel.add(Box.createVerticalGlue());
 
