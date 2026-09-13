@@ -25,24 +25,18 @@ public class LoginFrame extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
-
         // MAIN PANEL
 
         JPanel mainPanel = new JPanel();
-
         mainPanel.setLayout(new GridLayout(1, 2));
-
 
         // LEFT SIDE
 
         JPanel leftPanel = new JPanel();
-
         leftPanel.setBackground(darkRed);
-
         leftPanel.setLayout(
                 new BoxLayout(leftPanel, BoxLayout.Y_AXIS)
         );
-
 
         JLabel logo = new JLabel("BLOODLINK");
 
@@ -55,9 +49,7 @@ public class LoginFrame extends JFrame {
         );
 
         logo.setForeground(Color.WHITE);
-
         logo.setAlignmentX(Component.CENTER_ALIGNMENT);
-
 
         JLabel subtitle =
                 new JLabel("Blood Donor Management System");
@@ -71,9 +63,7 @@ public class LoginFrame extends JFrame {
         );
 
         subtitle.setForeground(Color.WHITE);
-
         subtitle.setAlignmentX(Component.CENTER_ALIGNMENT);
-
 
         JLabel message =
                 new JLabel(
@@ -90,12 +80,9 @@ public class LoginFrame extends JFrame {
         );
 
         message.setForeground(Color.WHITE);
-
         message.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-
         leftPanel.add(Box.createVerticalGlue());
-
         leftPanel.add(logo);
 
         leftPanel.add(
@@ -112,7 +99,6 @@ public class LoginFrame extends JFrame {
 
         leftPanel.add(Box.createVerticalGlue());
 
-
         // RIGHT SIDE
 
         JPanel rightPanel = new JPanel();
@@ -125,7 +111,6 @@ public class LoginFrame extends JFrame {
                         BoxLayout.Y_AXIS
                 )
         );
-
 
         JLabel welcome =
                 new JLabel("Welcome Back!");
@@ -142,7 +127,6 @@ public class LoginFrame extends JFrame {
                 Component.CENTER_ALIGNMENT
         );
 
-
         JLabel roleLabel =
                 new JLabel("Select your role");
 
@@ -157,7 +141,6 @@ public class LoginFrame extends JFrame {
         roleLabel.setAlignmentX(
                 Component.CENTER_ALIGNMENT
         );
-
 
         rightPanel.add(
                 Box.createVerticalStrut(35)
@@ -175,7 +158,6 @@ public class LoginFrame extends JFrame {
                 Box.createVerticalStrut(20)
         );
 
-
         // ROLE BUTTONS
 
         donorButton =
@@ -187,11 +169,9 @@ public class LoginFrame extends JFrame {
         adminButton =
                 new JButton("AUTHORIZED ADMIN");
 
-
         styleRoleButton(donorButton);
         styleRoleButton(hospitalButton);
         styleRoleButton(adminButton);
-
 
         rightPanel.add(donorButton);
 
@@ -211,7 +191,6 @@ public class LoginFrame extends JFrame {
                 Box.createVerticalStrut(20)
         );
 
-
         // EMAIL / USERNAME
 
         JLabel usernameLabel =
@@ -221,14 +200,12 @@ public class LoginFrame extends JFrame {
                 Component.CENTER_ALIGNMENT
         );
 
-
         usernameField =
                 new JTextField();
 
         usernameField.setMaximumSize(
                 new Dimension(330, 35)
         );
-
 
         rightPanel.add(usernameLabel);
 
@@ -242,7 +219,6 @@ public class LoginFrame extends JFrame {
                 Box.createVerticalStrut(12)
         );
 
-
         // PASSWORD
 
         JLabel passwordLabel =
@@ -252,14 +228,12 @@ public class LoginFrame extends JFrame {
                 Component.CENTER_ALIGNMENT
         );
 
-
         passwordField =
                 new JPasswordField();
 
         passwordField.setMaximumSize(
                 new Dimension(330, 35)
         );
-
 
         rightPanel.add(passwordLabel);
 
@@ -272,7 +246,6 @@ public class LoginFrame extends JFrame {
         rightPanel.add(
                 Box.createVerticalStrut(20)
         );
-
 
         // LOGIN BUTTON
 
@@ -288,7 +261,6 @@ public class LoginFrame extends JFrame {
         );
 
         loginButton.setBackground(darkRed);
-
         loginButton.setForeground(Color.WHITE);
 
         loginButton.setFont(
@@ -301,42 +273,41 @@ public class LoginFrame extends JFrame {
 
         loginButton.setFocusPainted(false);
 
-
         rightPanel.add(loginButton);
 
         rightPanel.add(
                 Box.createVerticalStrut(15)
         );
 
+        // REGISTER BUTTONS
 
-        // REGISTER TEXT
+        JButton donorRegisterButton =
+                new JButton("New donor? Register here");
 
-        JLabel registerLabel =
-                new JLabel(
-                        "<html><center>New donor? Register here<br>" +
-                        "Hospital / Blood Bank? Register here</center></html>"
-                );
+        JButton hospitalRegisterButton =
+                new JButton("Hospital / Blood Bank? Register here");
 
-        registerLabel.setAlignmentX(
-                Component.CENTER_ALIGNMENT
+        styleRegisterButton(donorRegisterButton);
+        styleRegisterButton(hospitalRegisterButton);
+
+        rightPanel.add(donorRegisterButton);
+
+        rightPanel.add(
+                Box.createVerticalStrut(5)
         );
 
-
-        rightPanel.add(registerLabel);
+        rightPanel.add(hospitalRegisterButton);
 
         rightPanel.add(
                 Box.createVerticalGlue()
         );
 
-
         // ADD PANELS
 
         mainPanel.add(leftPanel);
-
         mainPanel.add(rightPanel);
 
         add(mainPanel);
-
 
         // BUTTON ACTIONS
 
@@ -349,7 +320,6 @@ public class LoginFrame extends JFrame {
             );
         });
 
-
         hospitalButton.addActionListener(e -> {
 
             selectedRole = "HOSPITAL";
@@ -358,7 +328,6 @@ public class LoginFrame extends JFrame {
                     "Selected: HOSPITAL / BLOOD BANK"
             );
         });
-
 
         adminButton.addActionListener(e -> {
 
@@ -369,10 +338,16 @@ public class LoginFrame extends JFrame {
             );
         });
 
-
         loginButton.addActionListener(e -> login());
-    }
 
+        donorRegisterButton.addActionListener(e ->
+                registerDonor()
+        );
+
+        hospitalRegisterButton.addActionListener(e ->
+                registerHospital()
+        );
+    }
 
     // ROLE BUTTON STYLE
 
@@ -387,7 +362,6 @@ public class LoginFrame extends JFrame {
         );
 
         button.setBackground(Color.WHITE);
-
         button.setForeground(darkRed);
 
         button.setFont(
@@ -401,6 +375,32 @@ public class LoginFrame extends JFrame {
         button.setFocusPainted(false);
     }
 
+    // REGISTER BUTTON STYLE
+
+    void styleRegisterButton(JButton button) {
+
+        button.setMaximumSize(
+                new Dimension(330, 30)
+        );
+
+        button.setAlignmentX(
+                Component.CENTER_ALIGNMENT
+        );
+
+        button.setBackground(Color.WHITE);
+        button.setForeground(darkRed);
+
+        button.setBorderPainted(false);
+        button.setFocusPainted(false);
+
+        button.setFont(
+                new Font(
+                        "Arial",
+                        Font.PLAIN,
+                        13
+                )
+        );
+    }
 
     // LOGIN METHOD
 
@@ -414,7 +414,6 @@ public class LoginFrame extends JFrame {
                         passwordField.getPassword()
                 );
 
-
         // CHECK ROLE
 
         if (selectedRole.isEmpty()) {
@@ -427,11 +426,10 @@ public class LoginFrame extends JFrame {
             return;
         }
 
-
         // CHECK EMAIL / USERNAME AND PASSWORD
 
-        if (username.isEmpty() ||
-                password.isEmpty()) {
+        if (username.isEmpty()
+                || password.isEmpty()) {
 
             JOptionPane.showMessageDialog(
                     this,
@@ -441,12 +439,6 @@ public class LoginFrame extends JFrame {
             return;
         }
 
-
-        /*
-         * The Email / Username field can now contain
-         * either the username or the email address.
-         */
-
         String sql =
                 "SELECT user_id, username, email, role, status " +
                 "FROM users " +
@@ -454,16 +446,13 @@ public class LoginFrame extends JFrame {
                 "AND password = ? " +
                 "AND role = ?";
 
-
         try {
 
             Connection con =
                     DBConnection.getConnection();
 
-
             PreparedStatement ps =
                     con.prepareStatement(sql);
-
 
             ps.setString(
                     1,
@@ -485,10 +474,8 @@ public class LoginFrame extends JFrame {
                     selectedRole
             );
 
-
             ResultSet rs =
                     ps.executeQuery();
-
 
             if (rs.next()) {
 
@@ -500,7 +487,6 @@ public class LoginFrame extends JFrame {
 
                 String status =
                         rs.getString("status");
-
 
                 // CHECK ACCOUNT STATUS
 
@@ -518,14 +504,12 @@ public class LoginFrame extends JFrame {
                     return;
                 }
 
-
                 // LOGIN SUCCESSFUL
 
                 JOptionPane.showMessageDialog(
                         this,
                         "Login successful!"
                 );
-
 
                 // DONOR
 
@@ -539,19 +523,17 @@ public class LoginFrame extends JFrame {
                     dispose();
                 }
 
-
                 // HOSPITAL
 
                 else if (role.equals("HOSPITAL")) {
 
                     HospitalFrame hospitalFrame =
-                            new HospitalFrame();
+                            new HospitalFrame(userId);
 
                     hospitalFrame.setVisible(true);
 
                     dispose();
                 }
-
 
                 // ADMIN
 
@@ -566,7 +548,6 @@ public class LoginFrame extends JFrame {
                 }
             }
 
-
             else {
 
                 JOptionPane.showMessageDialog(
@@ -575,24 +556,620 @@ public class LoginFrame extends JFrame {
                 );
             }
 
-
             rs.close();
             ps.close();
             con.close();
 
         }
 
-
         catch (Exception e) {
 
             JOptionPane.showMessageDialog(
                     this,
-                    "Database error: " +
-                    e.getMessage()
+                    "Database error: "
+                            + e.getMessage()
             );
         }
     }
 
+    // DONOR REGISTRATION
+
+    void registerDonor() {
+
+        JTextField usernameField =
+                new JTextField();
+
+        JTextField emailField =
+                new JTextField();
+
+        JPasswordField passwordField =
+                new JPasswordField();
+
+        JPasswordField confirmPasswordField =
+                new JPasswordField();
+
+        JTextField nameField =
+                new JTextField();
+
+        JTextField ageField =
+                new JTextField();
+
+        JComboBox<String> bloodGroupBox =
+                new JComboBox<>(
+                        new String[]{
+                                "A+",
+                                "A-",
+                                "B+",
+                                "B-",
+                                "AB+",
+                                "AB-",
+                                "O+",
+                                "O-"
+                        }
+                );
+
+        JPanel panel =
+                new JPanel(
+                        new GridLayout(0, 2, 8, 8)
+                );
+
+        panel.add(
+                new JLabel("Username:")
+        );
+        panel.add(usernameField);
+
+        panel.add(
+                new JLabel("Email:")
+        );
+        panel.add(emailField);
+
+        panel.add(
+                new JLabel("Password:")
+        );
+        panel.add(passwordField);
+
+        panel.add(
+                new JLabel("Confirm Password:")
+        );
+        panel.add(confirmPasswordField);
+
+        panel.add(
+                new JLabel("Name:")
+        );
+        panel.add(nameField);
+
+        panel.add(
+                new JLabel("Age:")
+        );
+        panel.add(ageField);
+
+        panel.add(
+                new JLabel("Blood Group:")
+        );
+        panel.add(bloodGroupBox);
+
+        int result =
+                JOptionPane.showConfirmDialog(
+                        this,
+                        panel,
+                        "Donor Registration",
+                        JOptionPane.OK_CANCEL_OPTION,
+                        JOptionPane.PLAIN_MESSAGE
+                );
+
+        if (result != JOptionPane.OK_OPTION) {
+            return;
+        }
+
+        String username =
+                usernameField.getText().trim();
+
+        String email =
+                emailField.getText().trim();
+
+        String password =
+                new String(
+                        passwordField.getPassword()
+                );
+
+        String confirmPassword =
+                new String(
+                        confirmPasswordField.getPassword()
+                );
+
+        String name =
+                nameField.getText().trim();
+
+        String ageText =
+                ageField.getText().trim();
+
+        String bloodGroup =
+                bloodGroupBox.getSelectedItem().toString();
+
+        if (username.isEmpty()
+                || email.isEmpty()
+                || password.isEmpty()
+                || confirmPassword.isEmpty()
+                || name.isEmpty()
+                || ageText.isEmpty()) {
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Please fill all fields."
+            );
+
+            return;
+        }
+
+        if (!password.equals(confirmPassword)) {
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Passwords do not match."
+            );
+
+            return;
+        }
+
+        int age;
+
+        try {
+
+            age =
+                    Integer.parseInt(ageText);
+
+        } catch (NumberFormatException e) {
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Age must be a number."
+            );
+
+            return;
+        }
+
+        if (age < 1 || age > 100) {
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Please enter a valid age."
+            );
+
+            return;
+        }
+
+        Connection con = null;
+
+        try {
+
+            con =
+                    DBConnection.getConnection();
+
+            con.setAutoCommit(false);
+
+            String userSql =
+                    "INSERT INTO users " +
+                    "(username, password, email, role, status) " +
+                    "VALUES (?, ?, ?, 'DONOR', 'PENDING')";
+
+            PreparedStatement userPs =
+                    con.prepareStatement(
+                            userSql,
+                            PreparedStatement.RETURN_GENERATED_KEYS
+                    );
+
+            userPs.setString(
+                    1,
+                    username
+            );
+
+            userPs.setString(
+                    2,
+                    password
+            );
+
+            userPs.setString(
+                    3,
+                    email
+            );
+
+            userPs.executeUpdate();
+
+            ResultSet keys =
+                    userPs.getGeneratedKeys();
+
+            if (!keys.next()) {
+
+                con.rollback();
+
+                JOptionPane.showMessageDialog(
+                        this,
+                        "Registration failed."
+                );
+
+                return;
+            }
+
+            int userId =
+                    keys.getInt(1);
+
+            String donorSql =
+                    "INSERT INTO donors " +
+                    "(user_id, name, age, blood_group) " +
+                    "VALUES (?, ?, ?, ?)";
+
+            PreparedStatement donorPs =
+                    con.prepareStatement(
+                            donorSql
+                    );
+
+            donorPs.setInt(
+                    1,
+                    userId
+            );
+
+            donorPs.setString(
+                    2,
+                    name
+            );
+
+            donorPs.setInt(
+                    3,
+                    age
+            );
+
+            donorPs.setString(
+                    4,
+                    bloodGroup
+            );
+
+            donorPs.executeUpdate();
+
+            con.commit();
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Donor registration successful!\n" +
+                    "Your account is pending admin approval."
+            );
+
+            keys.close();
+            userPs.close();
+            donorPs.close();
+            con.close();
+
+        }
+
+        catch (Exception e) {
+
+            try {
+
+                if (con != null) {
+                    con.rollback();
+                }
+
+            } catch (Exception ignored) {
+            }
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Registration failed.\n"
+                            + e.getMessage()
+            );
+
+            try {
+
+                if (con != null) {
+                    con.close();
+                }
+
+            } catch (Exception ignored) {
+            }
+        }
+    }
+
+    // HOSPITAL REGISTRATION
+
+    void registerHospital() {
+
+        JTextField usernameField =
+                new JTextField();
+
+        JTextField emailField =
+                new JTextField();
+
+        JPasswordField passwordField =
+                new JPasswordField();
+
+        JPasswordField confirmPasswordField =
+                new JPasswordField();
+
+        JTextField hospitalNameField =
+                new JTextField();
+
+        JTextField registrationField =
+                new JTextField();
+
+        JTextField locationField =
+                new JTextField();
+
+        JTextField phoneField =
+                new JTextField();
+
+        JComboBox<String> typeBox =
+                new JComboBox<>(
+                        new String[]{
+                                "Hospital",
+                                "Blood Bank"
+                        }
+                );
+
+        JPanel panel =
+                new JPanel(
+                        new GridLayout(0, 2, 8, 8)
+                );
+
+        panel.add(
+                new JLabel("Username:")
+        );
+        panel.add(usernameField);
+
+        panel.add(
+                new JLabel("Email:")
+        );
+        panel.add(emailField);
+
+        panel.add(
+                new JLabel("Password:")
+        );
+        panel.add(passwordField);
+
+        panel.add(
+                new JLabel("Confirm Password:")
+        );
+        panel.add(confirmPasswordField);
+
+        panel.add(
+                new JLabel("Hospital / Blood Bank Name:")
+        );
+        panel.add(hospitalNameField);
+
+        panel.add(
+                new JLabel("Registration Number:")
+        );
+        panel.add(registrationField);
+
+        panel.add(
+                new JLabel("Location:")
+        );
+        panel.add(locationField);
+
+        panel.add(
+                new JLabel("Contact Number:")
+        );
+        panel.add(phoneField);
+
+        panel.add(
+                new JLabel("Type:")
+        );
+        panel.add(typeBox);
+
+        int result =
+                JOptionPane.showConfirmDialog(
+                        this,
+                        panel,
+                        "Hospital / Blood Bank Registration",
+                        JOptionPane.OK_CANCEL_OPTION,
+                        JOptionPane.PLAIN_MESSAGE
+                );
+
+        if (result != JOptionPane.OK_OPTION) {
+            return;
+        }
+
+        String username =
+                usernameField.getText().trim();
+
+        String email =
+                emailField.getText().trim();
+
+        String password =
+                new String(
+                        passwordField.getPassword()
+                );
+
+        String confirmPassword =
+                new String(
+                        confirmPasswordField.getPassword()
+                );
+
+        String hospitalName =
+                hospitalNameField.getText().trim();
+
+        String registrationNumber =
+                registrationField.getText().trim();
+
+        String location =
+                locationField.getText().trim();
+
+        String phone =
+                phoneField.getText().trim();
+
+        String type =
+                typeBox.getSelectedItem().toString().toUpperCase();
+
+        if (username.isEmpty()
+                || email.isEmpty()
+                || password.isEmpty()
+                || confirmPassword.isEmpty()
+                || hospitalName.isEmpty()
+                || registrationNumber.isEmpty()
+                || location.isEmpty()
+                || phone.isEmpty()) {
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Please fill all fields."
+            );
+
+            return;
+        }
+
+        if (!password.equals(confirmPassword)) {
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Passwords do not match."
+            );
+
+            return;
+        }
+
+        Connection con = null;
+
+        try {
+
+            con =
+                    DBConnection.getConnection();
+
+            con.setAutoCommit(false);
+
+            String userSql =
+                    "INSERT INTO users " +
+                    "(username, password, email, role, status) " +
+                    "VALUES (?, ?, ?, 'HOSPITAL', 'PENDING')";
+
+            PreparedStatement userPs =
+                    con.prepareStatement(
+                            userSql,
+                            PreparedStatement.RETURN_GENERATED_KEYS
+                    );
+
+            userPs.setString(
+                    1,
+                    username
+            );
+
+            userPs.setString(
+                    2,
+                    password
+            );
+
+            userPs.setString(
+                    3,
+                    email
+            );
+
+            userPs.executeUpdate();
+
+            ResultSet keys =
+                    userPs.getGeneratedKeys();
+
+            if (!keys.next()) {
+
+                con.rollback();
+
+                JOptionPane.showMessageDialog(
+                        this,
+                        "Registration failed."
+                );
+
+                return;
+            }
+
+            int userId =
+                    keys.getInt(1);
+
+            String hospitalSql =
+                    "INSERT INTO hospitals " +
+                    "(user_id, hospital_name, registration_number, " +
+                    "location, contact_number, email, type) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?)";
+
+            PreparedStatement hospitalPs =
+                    con.prepareStatement(
+                            hospitalSql
+                    );
+
+            hospitalPs.setInt(
+                    1,
+                    userId
+            );
+
+            hospitalPs.setString(
+                    2,
+                    hospitalName
+            );
+
+            hospitalPs.setString(
+                    3,
+                    registrationNumber
+            );
+
+            hospitalPs.setString(
+                    4,
+                    location
+            );
+
+            hospitalPs.setString(
+                    5,
+                    phone
+            );
+
+            hospitalPs.setString(
+                    6,
+                    email
+            );
+
+            hospitalPs.setString(
+                    7,
+                    type
+            );
+
+            hospitalPs.executeUpdate();
+
+            con.commit();
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Hospital / Blood Bank registration successful!\n" +
+                    "Your account is pending admin approval."
+            );
+
+            keys.close();
+            userPs.close();
+            hospitalPs.close();
+            con.close();
+
+        }
+
+        catch (Exception e) {
+
+            try {
+
+                if (con != null) {
+                    con.rollback();
+                }
+
+            } catch (Exception ignored) {
+            }
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Registration failed.\n"
+                            + e.getMessage()
+            );
+
+            try {
+
+                if (con != null) {
+                    con.close();
+                }
+
+            } catch (Exception ignored) {
+            }
+        }
+    }
 
     // MAIN METHOD
 

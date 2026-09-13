@@ -5,7 +5,11 @@ public class HospitalFrame extends JFrame {
 
     Color darkRed = new Color(150, 30, 45);
 
-    public HospitalFrame() {
+    private int userId;
+
+    public HospitalFrame(int userId) {
+
+        this.userId = userId;
 
         setTitle("BloodLink - Hospital / Blood Bank");
         setSize(1000, 600);
@@ -101,31 +105,33 @@ public class HospitalFrame extends JFrame {
         });
 
         // Request listener
-requestButton.addActionListener(e -> {
+        requestButton.addActionListener(e -> {
 
-    CreateRequestFrame requestFrame =
-            new CreateRequestFrame();
+            CreateRequestFrame requestFrame =
+                    new CreateRequestFrame();
 
-    requestFrame.setVisible(true);
-});
+            requestFrame.setVisible(true);
+        });
 
-        // Other buttons for now
-profileButton.addActionListener(e -> {
+        // Profile listener
+        profileButton.addActionListener(e -> {
 
-    HospitalProfileFrame profileFrame =
-            new HospitalProfileFrame();
+            HospitalProfileFrame profileFrame =
+                    new HospitalProfileFrame(userId);
 
-    profileFrame.setVisible(true);
-});
+            profileFrame.setVisible(true);
+        });
 
+        // Tracking listener
         trackingButton.addActionListener(e -> {
 
-    HospitalTrackingFrame trackingFrame =
-            new HospitalTrackingFrame();
+            HospitalTrackingFrame trackingFrame =
+                    new HospitalTrackingFrame(userId);
 
-    trackingFrame.setVisible(true);
-});
+            trackingFrame.setVisible(true);
+        });
 
+        // Notification listener
         notificationButton.addActionListener(e -> {
 
             JOptionPane.showMessageDialog(

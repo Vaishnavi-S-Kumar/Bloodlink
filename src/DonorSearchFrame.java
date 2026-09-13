@@ -1,5 +1,8 @@
 import javax.swing.*;
 import java.awt.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 
 public class DonorSearchFrame extends JPanel {
 
@@ -39,7 +42,6 @@ public class DonorSearchFrame extends JPanel {
                 BorderLayout.WEST
         );
 
-
         // Search panel
 
         JPanel searchPanel =
@@ -63,7 +65,6 @@ public class DonorSearchFrame extends JPanel {
                 )
         );
 
-
         JLabel bloodLabel =
                 new JLabel("Blood Group:");
 
@@ -82,13 +83,11 @@ public class DonorSearchFrame extends JPanel {
                         }
                 );
 
-
         JLabel locationLabel =
                 new JLabel("Location:");
 
         JTextField locationField =
                 new JTextField();
-
 
         JLabel availabilityLabel =
                 new JLabel("Availability:");
@@ -102,7 +101,6 @@ public class DonorSearchFrame extends JPanel {
                         }
                 );
 
-
         JLabel eligibilityLabel =
                 new JLabel("Eligibility:");
 
@@ -115,7 +113,6 @@ public class DonorSearchFrame extends JPanel {
                         }
                 );
 
-
         searchPanel.add(bloodLabel);
         searchPanel.add(bloodBox);
 
@@ -127,7 +124,6 @@ public class DonorSearchFrame extends JPanel {
 
         searchPanel.add(eligibilityLabel);
         searchPanel.add(eligibilityBox);
-
 
         // Search button
 
@@ -145,7 +141,6 @@ public class DonorSearchFrame extends JPanel {
                         14
                 )
         );
-
 
         // Results
 
@@ -166,14 +161,13 @@ public class DonorSearchFrame extends JPanel {
                 "Search results will appear here."
         );
 
-
         searchButton.addActionListener(e -> {
 
             String bloodGroup =
                     (String) bloodBox.getSelectedItem();
 
             String location =
-                    locationField.getText();
+                    locationField.getText().trim();
 
             String availability =
                     (String) availabilityBox.getSelectedItem();
@@ -181,17 +175,169 @@ public class DonorSearchFrame extends JPanel {
             String eligibility =
                     (String) eligibilityBox.getSelectedItem();
 
+            StringBuilder sql =
+                    new StringBuilder(
+                            "SELECT donor_id, name, age, gender, " +
+                            "blood_group, phone, location, " +
+                            "availability, eligibility " +
+                            "FROM donors WHERE 1=1"
+                    );
 
-            resultArea.setText(
-                    "Search Criteria\n\n"
-                    + "Blood Group: " + bloodGroup + "\n"
-                    + "Location: " + location + "\n"
-                    + "Availability: " + availability + "\n"
-                    + "Eligibility: " + eligibility
-                    + "\n\nNo database connected yet."
-            );
+            if (!bloodGroup.equals("Any")) {
+                sql.append(" AND blood_group = ?");
+            }
+
+            if (!location.isEmpty()) {
+                sql.append(" AND location LIKE ?");
+            }
+
+            if (!availability.equals("Any")) {
+                sql.append(" AND availability = ?");
+            }
+
+            if (!eligibility.equals("Any")) {
+                sql.append(" AND eligibility = ?");
+            }
+
+            sql.append(" ORDER BY name");
+
+            resultArea.setText("");
+
+            try (
+                    Connection con =
+                            DBConnection.getConnection();
+
+                    PreparedStatement ps =
+                            con.prepareStatement(sql.toString())
+            ) {
+
+                int parameter = 1;
+
+                if (!bloodGroup.equals("Any")) {
+
+                    ps.setString(
+                            parameter++,
+                            bloodGroup
+                    );
+                }
+
+                if (!location.isEmpty()) {
+
+                    ps.setString(
+                            parameter++,
+                            "%" + location + "%"
+                    );
+                }
+
+                if (!availability.equals("Any")) {
+
+                    String dbAvailability =
+                            availability.equals("Available")
+                                    ? "AVAILABLE"
+                                    : "NOT AVAILABLE";
+
+                    ps.setString(
+                            parameter++,
+                            dbAvailability
+                    );
+                }
+
+                if (!eligibility.equals("Any")) {
+
+                    String dbEligibility =
+                            eligibility.equals("Eligible")
+                                    ? "ELIGIBLE"
+                                    : "NOT ELIGIBLE";
+
+                    ps.setString(
+                            parameter++,
+                            dbEligibility
+                    );
+                }
+
+                ResultSet rs =
+                        ps.executeQuery();
+
+                boolean found = false;
+
+                while (rs.next()) {
+
+                    found = true;
+
+                    resultArea.append(
+                            "Donor ID: "
+                            + rs.getInt("donor_id")
+                            + "\n"
+                    );
+
+                    resultArea.append(
+                            "Name: "
+                            + rs.getString("name")
+                            + "\n"
+                    );
+
+                    resultArea.append(
+                            "Age: "
+                            + rs.getInt("age")
+                            + "\n"
+                    );
+
+                    resultArea.append(
+                            "Gender: "
+                            + rs.getString("gender")
+                            + "\n"
+                    );
+
+                    resultArea.append(
+                            "Blood Group: "
+                            + rs.getString("blood_group")
+                            + "\n"
+                    );
+
+                    resultArea.append(
+                            "Phone: "
+                            + rs.getString("phone")
+                            + "\n"
+                    );
+
+                    resultArea.append(
+                            "Location: "
+                            + rs.getString("location")
+                            + "\n"
+                    );
+
+                    resultArea.append(
+                            "Availability: "
+                            + rs.getString("availability")
+                            + "\n"
+                    );
+
+                    resultArea.append(
+                            "Eligibility: "
+                            + rs.getString("eligibility")
+                            + "\n"
+                    );
+
+                    resultArea.append(
+                            "-----------------------------------\n"
+                    );
+                }
+
+                if (!found) {
+
+                    resultArea.setText(
+                            "No suitable donors found."
+                    );
+                }
+
+            } catch (Exception ex) {
+
+                resultArea.setText(
+                        "Failed to search donors.\n\n"
+                        + ex.getMessage()
+                );
+            }
         });
-
 
         JPanel buttonPanel =
                 new JPanel();
@@ -200,14 +346,12 @@ public class DonorSearchFrame extends JPanel {
 
         buttonPanel.add(searchButton);
 
-
         JPanel centerPanel =
                 new JPanel(
                         new BorderLayout()
                 );
 
         centerPanel.setBackground(Color.WHITE);
-
 
         centerPanel.add(
                 searchPanel,
@@ -224,7 +368,6 @@ public class DonorSearchFrame extends JPanel {
                 BorderLayout.SOUTH
         );
 
-
         mainPanel.add(
                 topPanel,
                 BorderLayout.NORTH
@@ -235,12 +378,10 @@ public class DonorSearchFrame extends JPanel {
                 BorderLayout.CENTER
         );
 
-
         add(mainPanel);
     }
 
-
-    // Compatibility method for current DonorFrame navigation
+    // Compatibility method
 
     public Container getContentPane() {
         return this;
