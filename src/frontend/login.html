@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BloodLink - Login</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<script>
+    function selectRole(button) {
+        document.querySelectorAll(".role-button").forEach(function(btn) {
+            btn.classList.remove("active");
+        });
+
+        button.classList.add("active");
+    }
+</script>
+<body>
+
+    <div class="login-container">
+
+        <!-- Left Branding Section -->
+        <div class="branding">
+            <div class="brand-content">
+                <h1>BloodLink</h1>
+                <p>Connecting donors with those in need.</p>
+            </div>
+        </div>
+
+        <!-- Right Login Section -->
+        <div class="login-section">
+
+            <div class="login-box">
+
+                <h2>Welcome Back</h2>
+                <p class="subtitle">Login to continue to BloodLink</p>
+
+                <h3>Select your role</h3>
+<div class="role-container">
+    <button class="role-button active" type="button" onclick="selectRole(this)">
+        Donor
+    </button>
+
+    <button class="role-button" type="button" onclick="selectRole(this)">
+        Hospital
+    </button>
+
+    <button class="role-button" type="button" onclick="selectRole(this)">
+        Authorized Admin
+    </button>
+</div>
+
+                <form>
+
+                    <label for="username">Username or Email</label>
+                    <input
+                        type="text"
+                        id="username"
+                        placeholder="Enter your username or email"
+                    >
+
+                    <label for="password">Password</label>
+                    <input
+                        type="password"
+                        id="password"
+                        placeholder="Enter your password"
+                    >
+
+                    <button class="login-button" type="submit">
+                        Login
+                    </button>
+
+                </form>
+
+                <p class="register-text">
+                    Don't have an account?
+                    <a href="#">Register here</a>
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</body>
+</html>

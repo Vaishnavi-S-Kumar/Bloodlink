@@ -5,7 +5,11 @@ public class DonorFrame extends JFrame {
 
     Color darkRed = new Color(150, 30, 45);
 
-    public DonorFrame() {
+    int userId;
+
+    public DonorFrame(int userId) {
+
+        this.userId = userId;
 
         setTitle("BloodLink - Donor");
         setSize(1000, 600);
@@ -119,50 +123,74 @@ public class DonorFrame extends JFrame {
         menuPanel.add(requestsButton);
         menuPanel.add(historyButton);
         menuPanel.add(notificationButton);
-profileButton.addActionListener(e -> {
-
-    DonorProfileFrame profileFrame =
-            new DonorProfileFrame();
-
-    profileFrame.setVisible(true);
-});
 
 
-availabilityButton.addActionListener(e -> {
+        // PROFILE
 
-    DonorAvailabilityFrame availabilityFrame =
-            new DonorAvailabilityFrame();
+        profileButton.addActionListener(e -> {
 
-    availabilityFrame.setVisible(true);
-});
-eligibilityButton.addActionListener(e -> {
+            DonorProfileFrame profileFrame =
+                    new DonorProfileFrame(userId);
 
-    DonorEligibilityFrame eligibilityFrame =
-            new DonorEligibilityFrame();
+            profileFrame.setVisible(true);
+        });
 
-    eligibilityFrame.setVisible(true);
-});
-requestsButton.addActionListener(e -> {
 
-    BloodRequestFrame requestFrame =
-            new BloodRequestFrame();
+        // AVAILABILITY
 
-    requestFrame.setVisible(true);
-});
-historyButton.addActionListener(e -> {
+        availabilityButton.addActionListener(e -> {
 
-    DonorHistoryFrame historyFrame =
-            new DonorHistoryFrame();
+            DonorAvailabilityFrame availabilityFrame =
+                    new DonorAvailabilityFrame();
 
-    historyFrame.setVisible(true);
-});
-notificationButton.addActionListener(e -> {
+            availabilityFrame.setVisible(true);
+        });
 
-    DonorNotificationFrame notificationFrame =
-            new DonorNotificationFrame();
 
-    notificationFrame.setVisible(true);
-});
+        // ELIGIBILITY
+
+        eligibilityButton.addActionListener(e -> {
+
+            DonorEligibilityFrame eligibilityFrame =
+                    new DonorEligibilityFrame();
+
+            eligibilityFrame.setVisible(true);
+        });
+
+
+        // BLOOD REQUESTS
+
+        requestsButton.addActionListener(e -> {
+
+            BloodRequestFrame requestFrame =
+                    new BloodRequestFrame(userId);
+
+            requestFrame.setVisible(true);
+        });
+
+
+        // DONATION HISTORY
+
+        historyButton.addActionListener(e -> {
+
+            DonorHistoryFrame historyFrame =
+                    new DonorHistoryFrame();
+
+            historyFrame.setVisible(true);
+        });
+
+
+        // NOTIFICATIONS
+
+        notificationButton.addActionListener(e -> {
+
+            DonorNotificationFrame notificationFrame =
+                    new DonorNotificationFrame();
+
+            notificationFrame.setVisible(true);
+        });
+
+
         // CENTER
 
         JPanel centerPanel = new JPanel();
@@ -243,16 +271,5 @@ notificationButton.addActionListener(e -> {
 
 
         add(mainPanel);
-    }
-
-
-    // MAIN METHOD
-
-    public static void main(String[] args) {
-
-        DonorFrame frame =
-                new DonorFrame();
-
-        frame.setVisible(true);
     }
 }
