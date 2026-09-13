@@ -8,6 +8,8 @@ public class AdminFrame extends JFrame {
 
     Color darkRed = new Color(150, 30, 45);
 
+    private JPanel centerPanel;
+
     public AdminFrame() {
 
         setTitle("BloodLink - Admin");
@@ -111,61 +113,12 @@ public class AdminFrame extends JFrame {
 
         // Center
 
-        JPanel centerPanel =
-                new JPanel();
-
-        centerPanel.setBackground(Color.WHITE);
-
-        centerPanel.setLayout(
-                new BoxLayout(
-                        centerPanel,
-                        BoxLayout.Y_AXIS
-                )
-        );
-
-        JLabel heading =
-                new JLabel("Admin Dashboard");
-
-        heading.setFont(
-                new Font(
-                        "Arial",
-                        Font.BOLD,
-                        28
-                )
-        );
-
-        heading.setAlignmentX(
-                Component.CENTER_ALIGNMENT
-        );
-
-        JLabel message =
-                new JLabel(
-                        "Verify users and manage the BloodLink system"
+        centerPanel =
+                new JPanel(
+                        new BorderLayout()
                 );
 
-        message.setFont(
-                new Font(
-                        "Arial",
-                        Font.PLAIN,
-                        16
-                )
-        );
-
-        message.setAlignmentX(
-                Component.CENTER_ALIGNMENT
-        );
-
-        centerPanel.add(
-                Box.createVerticalStrut(100)
-        );
-
-        centerPanel.add(heading);
-
-        centerPanel.add(
-                Box.createVerticalStrut(15)
-        );
-
-        centerPanel.add(message);
+        showDashboard();
 
         // Button actions
 
@@ -211,9 +164,114 @@ public class AdminFrame extends JFrame {
         add(mainPanel);
     }
 
-    // SHOW PENDING USERS
+    // ADMIN DASHBOARD
+
+    private void showDashboard() {
+
+        centerPanel.removeAll();
+
+        JPanel dashboardPanel =
+                new JPanel();
+
+        dashboardPanel.setBackground(
+                Color.WHITE
+        );
+
+        dashboardPanel.setLayout(
+                new BoxLayout(
+                        dashboardPanel,
+                        BoxLayout.Y_AXIS
+                )
+        );
+
+        JLabel heading =
+                new JLabel("Admin Dashboard");
+
+        heading.setFont(
+                new Font(
+                        "Arial",
+                        Font.BOLD,
+                        28
+                )
+        );
+
+        heading.setAlignmentX(
+                Component.CENTER_ALIGNMENT
+        );
+
+        JLabel message =
+                new JLabel(
+                        "Verify users and manage the BloodLink system"
+                );
+
+        message.setFont(
+                new Font(
+                        "Arial",
+                        Font.PLAIN,
+                        16
+                )
+        );
+
+        message.setAlignmentX(
+                Component.CENTER_ALIGNMENT
+        );
+
+        dashboardPanel.add(
+                Box.createVerticalStrut(100)
+        );
+
+        dashboardPanel.add(heading);
+
+        dashboardPanel.add(
+                Box.createVerticalStrut(15)
+        );
+
+        dashboardPanel.add(message);
+
+        centerPanel.add(
+                dashboardPanel,
+                BorderLayout.CENTER
+        );
+
+        centerPanel.revalidate();
+        centerPanel.repaint();
+    }
+
+    // SHOW PENDING USERS INSIDE ADMIN WINDOW
 
     private void showPendingUsers() {
+
+        centerPanel.removeAll();
+
+        JPanel panel =
+                new JPanel(new BorderLayout());
+
+        panel.setBackground(Color.WHITE);
+
+        JLabel heading =
+                new JLabel("Pending User Verification");
+
+        heading.setFont(
+                new Font(
+                        "Arial",
+                        Font.BOLD,
+                        22
+                )
+        );
+
+        heading.setBorder(
+                BorderFactory.createEmptyBorder(
+                        20,
+                        20,
+                        15,
+                        20
+                )
+        );
+
+        panel.add(
+                heading,
+                BorderLayout.NORTH
+        );
 
         String sql =
                 "SELECT user_id, username, email, role, status " +
@@ -260,135 +318,127 @@ public class AdminFrame extends JFrame {
 
             if (model.isEmpty()) {
 
-                JOptionPane.showMessageDialog(
-                        this,
-                        "No pending users found."
+                JLabel noUsers =
+                        new JLabel(
+                                "No pending users found."
+                        );
+
+                noUsers.setFont(
+                        new Font(
+                                "Arial",
+                                Font.PLAIN,
+                                16
+                        )
                 );
 
-                return;
+                noUsers.setHorizontalAlignment(
+                        SwingConstants.CENTER
+                );
+
+                panel.add(
+                        noUsers,
+                        BorderLayout.CENTER
+                );
+
+            } else {
+
+                JList<String> userList =
+                        new JList<>(model);
+
+                userList.setSelectionMode(
+                        ListSelectionModel.SINGLE_SELECTION
+                );
+
+                userList.setFont(
+                        new Font(
+                                "Arial",
+                                Font.PLAIN,
+                                13
+                        )
+                );
+
+                JScrollPane scrollPane =
+                        new JScrollPane(userList);
+
+                JPanel buttonPanel =
+                        new JPanel();
+
+                JButton approveButton =
+                        new JButton("APPROVE");
+
+                JButton rejectButton =
+                        new JButton("REJECT");
+
+                buttonPanel.add(
+                        approveButton
+                );
+
+                buttonPanel.add(
+                        rejectButton
+                );
+
+                panel.add(
+                        scrollPane,
+                        BorderLayout.CENTER
+                );
+
+                panel.add(
+                        buttonPanel,
+                        BorderLayout.SOUTH
+                );
+
+                approveButton.addActionListener(e -> {
+
+                    String selected =
+                            userList.getSelectedValue();
+
+                    if (selected == null) {
+
+                        JOptionPane.showMessageDialog(
+                                this,
+                                "Please select a user."
+                        );
+
+                        return;
+                    }
+
+                    int userId =
+                            getUserId(selected);
+
+                    updateUserStatus(
+                            userId,
+                            "APPROVED"
+                    );
+
+                    showPendingUsers();
+                });
+
+                rejectButton.addActionListener(e -> {
+
+                    String selected =
+                            userList.getSelectedValue();
+
+                    if (selected == null) {
+
+                        JOptionPane.showMessageDialog(
+                                this,
+                                "Please select a user."
+                        );
+
+                        return;
+                    }
+
+                    int userId =
+                            getUserId(selected);
+
+                    updateUserStatus(
+                            userId,
+                            "REJECTED"
+                    );
+
+                    showPendingUsers();
+                });
             }
-
-            JList<String> userList =
-                    new JList<>(model);
-
-            userList.setSelectionMode(
-                    ListSelectionModel.SINGLE_SELECTION
-            );
-
-            userList.setFont(
-                    new Font(
-                            "Arial",
-                            Font.PLAIN,
-                            13
-                    )
-            );
-
-            JScrollPane scrollPane =
-                    new JScrollPane(userList);
-
-            scrollPane.setPreferredSize(
-                    new Dimension(750, 250)
-            );
-
-            JButton approveButton =
-                    new JButton("APPROVE");
-
-            JButton rejectButton =
-                    new JButton("REJECT");
-
-            JPanel buttonPanel =
-                    new JPanel();
-
-            buttonPanel.add(
-                    approveButton
-            );
-
-            buttonPanel.add(
-                    rejectButton
-            );
-
-            JPanel panel =
-                    new JPanel(new BorderLayout());
-
-            panel.add(
-                    scrollPane,
-                    BorderLayout.CENTER
-            );
-
-            panel.add(
-                    buttonPanel,
-                    BorderLayout.SOUTH
-            );
-
-            JDialog dialog =
-                    new JDialog(
-                            this,
-                            "Pending User Verification",
-                            true
-                    );
-
-            dialog.setSize(800, 350);
-            dialog.setLocationRelativeTo(this);
-
-            dialog.add(panel);
-
-            approveButton.addActionListener(e -> {
-
-                String selected =
-                        userList.getSelectedValue();
-
-                if (selected == null) {
-
-                    JOptionPane.showMessageDialog(
-                            dialog,
-                            "Please select a user."
-                    );
-
-                    return;
-                }
-
-                int userId =
-                        getUserId(selected);
-
-                updateUserStatus(
-                        userId,
-                        "APPROVED"
-                );
-
-                dialog.dispose();
-
-                showPendingUsers();
-            });
-
-            rejectButton.addActionListener(e -> {
-
-                String selected =
-                        userList.getSelectedValue();
-
-                if (selected == null) {
-
-                    JOptionPane.showMessageDialog(
-                            dialog,
-                            "Please select a user."
-                    );
-
-                    return;
-                }
-
-                int userId =
-                        getUserId(selected);
-
-                updateUserStatus(
-                        userId,
-                        "REJECTED"
-                );
-
-                dialog.dispose();
-
-                showPendingUsers();
-            });
-
-            dialog.setVisible(true);
 
         } catch (Exception e) {
 
@@ -398,11 +448,51 @@ public class AdminFrame extends JFrame {
                             + e.getMessage()
             );
         }
+
+        centerPanel.add(
+                panel,
+                BorderLayout.CENTER
+        );
+
+        centerPanel.revalidate();
+        centerPanel.repaint();
     }
 
-    // SHOW BLOOD REQUESTS
+    // SHOW BLOOD REQUESTS INSIDE ADMIN WINDOW
 
     private void showRequests() {
+
+        centerPanel.removeAll();
+
+        JPanel panel =
+                new JPanel(new BorderLayout());
+
+        panel.setBackground(Color.WHITE);
+
+        JLabel heading =
+                new JLabel("Manage Blood Requests");
+
+        heading.setFont(
+                new Font(
+                        "Arial",
+                        Font.BOLD,
+                        22
+                )
+        );
+
+        heading.setBorder(
+                BorderFactory.createEmptyBorder(
+                        20,
+                        20,
+                        15,
+                        20
+                )
+        );
+
+        panel.add(
+                heading,
+                BorderLayout.NORTH
+        );
 
         String sql =
                 "SELECT br.request_id, " +
@@ -454,135 +544,131 @@ public class AdminFrame extends JFrame {
 
             if (model.isEmpty()) {
 
-                JOptionPane.showMessageDialog(
-                        this,
-                        "No blood requests found."
+                JLabel noRequests =
+                        new JLabel(
+                                "No blood requests found."
+                        );
+
+                noRequests.setFont(
+                        new Font(
+                                "Arial",
+                                Font.PLAIN,
+                                16
+                        )
                 );
 
-                return;
+                noRequests.setHorizontalAlignment(
+                        SwingConstants.CENTER
+                );
+
+                panel.add(
+                        noRequests,
+                        BorderLayout.CENTER
+                );
+
+            } else {
+
+                JList<String> requestList =
+                        new JList<>(model);
+
+                requestList.setSelectionMode(
+                        ListSelectionModel.SINGLE_SELECTION
+                );
+
+                requestList.setFont(
+                        new Font(
+                                "Arial",
+                                Font.PLAIN,
+                                12
+                        )
+                );
+
+                JScrollPane scrollPane =
+                        new JScrollPane(requestList);
+
+                JPanel buttonPanel =
+                        new JPanel();
+
+                JButton closeButton =
+                        new JButton(
+                                "CLOSE REQUEST"
+                        );
+
+                JButton cancelButton =
+                        new JButton(
+                                "CANCEL REQUEST"
+                        );
+
+                buttonPanel.add(
+                        closeButton
+                );
+
+                buttonPanel.add(
+                        cancelButton
+                );
+
+                panel.add(
+                        scrollPane,
+                        BorderLayout.CENTER
+                );
+
+                panel.add(
+                        buttonPanel,
+                        BorderLayout.SOUTH
+                );
+
+                closeButton.addActionListener(e -> {
+
+                    String selected =
+                            requestList.getSelectedValue();
+
+                    if (selected == null) {
+
+                        JOptionPane.showMessageDialog(
+                                this,
+                                "Please select a request."
+                        );
+
+                        return;
+                    }
+
+                    int requestId =
+                            getRequestId(selected);
+
+                    updateRequestStatus(
+                            requestId,
+                            "COMPLETED"
+                    );
+
+                    showRequests();
+                });
+
+                cancelButton.addActionListener(e -> {
+
+                    String selected =
+                            requestList.getSelectedValue();
+
+                    if (selected == null) {
+
+                        JOptionPane.showMessageDialog(
+                                this,
+                                "Please select a request."
+                        );
+
+                        return;
+                    }
+
+                    int requestId =
+                            getRequestId(selected);
+
+                    updateRequestStatus(
+                            requestId,
+                            "CANCELLED"
+                    );
+
+                    showRequests();
+                });
             }
-
-            JList<String> requestList =
-                    new JList<>(model);
-
-            requestList.setSelectionMode(
-                    ListSelectionModel.SINGLE_SELECTION
-            );
-
-            requestList.setFont(
-                    new Font(
-                            "Arial",
-                            Font.PLAIN,
-                            12
-                    )
-            );
-
-            JScrollPane scrollPane =
-                    new JScrollPane(requestList);
-
-            scrollPane.setPreferredSize(
-                    new Dimension(850, 300)
-            );
-
-            JButton closeButton =
-                    new JButton("CLOSE REQUEST");
-
-            JButton cancelButton =
-                    new JButton("CANCEL REQUEST");
-
-            JPanel buttonPanel =
-                    new JPanel();
-
-            buttonPanel.add(
-                    closeButton
-            );
-
-            buttonPanel.add(
-                    cancelButton
-            );
-
-            JPanel panel =
-                    new JPanel(new BorderLayout());
-
-            panel.add(
-                    scrollPane,
-                    BorderLayout.CENTER
-            );
-
-            panel.add(
-                    buttonPanel,
-                    BorderLayout.SOUTH
-            );
-
-            JDialog dialog =
-                    new JDialog(
-                            this,
-                            "Manage Blood Requests",
-                            true
-                    );
-
-            dialog.setSize(900, 400);
-            dialog.setLocationRelativeTo(this);
-
-            dialog.add(panel);
-
-            closeButton.addActionListener(e -> {
-
-                String selected =
-                        requestList.getSelectedValue();
-
-                if (selected == null) {
-
-                    JOptionPane.showMessageDialog(
-                            dialog,
-                            "Please select a request."
-                    );
-
-                    return;
-                }
-
-                int requestId =
-                        getRequestId(selected);
-
-                updateRequestStatus(
-                        requestId,
-                        "COMPLETED"
-                );
-
-                dialog.dispose();
-
-                showRequests();
-            });
-
-            cancelButton.addActionListener(e -> {
-
-                String selected =
-                        requestList.getSelectedValue();
-
-                if (selected == null) {
-
-                    JOptionPane.showMessageDialog(
-                            dialog,
-                            "Please select a request."
-                    );
-
-                    return;
-                }
-
-                int requestId =
-                        getRequestId(selected);
-
-                updateRequestStatus(
-                        requestId,
-                        "CANCELLED"
-                );
-
-                dialog.dispose();
-
-                showRequests();
-            });
-
-            dialog.setVisible(true);
 
         } catch (Exception e) {
 
@@ -592,6 +678,14 @@ public class AdminFrame extends JFrame {
                             + e.getMessage()
             );
         }
+
+        centerPanel.add(
+                panel,
+                BorderLayout.CENTER
+        );
+
+        centerPanel.revalidate();
+        centerPanel.repaint();
     }
 
     // GET USER ID

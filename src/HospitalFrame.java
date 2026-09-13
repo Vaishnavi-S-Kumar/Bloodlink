@@ -6,6 +6,7 @@ public class HospitalFrame extends JFrame {
     Color darkRed = new Color(150, 30, 45);
 
     private int userId;
+    private JPanel centerPanel;
 
     public HospitalFrame(int userId) {
 
@@ -64,10 +65,72 @@ public class HospitalFrame extends JFrame {
         menuPanel.add(notificationButton);
 
         // Center
-        JPanel centerPanel = new JPanel();
-        centerPanel.setBackground(Color.WHITE);
-        centerPanel.setLayout(
-                new BoxLayout(centerPanel, BoxLayout.Y_AXIS)
+        centerPanel = new JPanel(
+                new BorderLayout()
+        );
+
+        showDashboard();
+
+        // Profile
+        profileButton.addActionListener(e -> {
+
+            HospitalProfileFrame profileFrame =
+                    new HospitalProfileFrame(userId);
+
+            showPanel(profileFrame.getContentPane());
+        });
+
+        // Search Donors
+        searchButton.addActionListener(e -> {
+
+            DonorSearchFrame searchFrame =
+                    new DonorSearchFrame();
+
+            showPanel(searchFrame.getContentPane());
+        });
+
+        // Create Request
+        requestButton.addActionListener(e -> {
+
+            CreateRequestFrame requestFrame =
+                    new CreateRequestFrame();
+
+            showPanel(requestFrame.getContentPane());
+        });
+
+        // Track Requests
+        trackingButton.addActionListener(e -> {
+
+            HospitalTrackingFrame trackingFrame =
+                    new HospitalTrackingFrame(userId);
+
+            showPanel(trackingFrame.getContentPane());
+        });
+
+        // Notifications
+        notificationButton.addActionListener(e -> {
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Notifications interface will be created next."
+            );
+        });
+
+        mainPanel.add(topPanel, BorderLayout.NORTH);
+        mainPanel.add(menuPanel, BorderLayout.WEST);
+        mainPanel.add(centerPanel, BorderLayout.CENTER);
+
+        add(mainPanel);
+    }
+
+    private void showDashboard() {
+
+        centerPanel.removeAll();
+
+        JPanel dashboardPanel = new JPanel();
+        dashboardPanel.setBackground(Color.WHITE);
+        dashboardPanel.setLayout(
+                new BoxLayout(dashboardPanel, BoxLayout.Y_AXIS)
         );
 
         JLabel heading =
@@ -90,60 +153,26 @@ public class HospitalFrame extends JFrame {
 
         message.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        centerPanel.add(Box.createVerticalStrut(100));
-        centerPanel.add(heading);
-        centerPanel.add(Box.createVerticalStrut(15));
-        centerPanel.add(message);
+        dashboardPanel.add(Box.createVerticalStrut(100));
+        dashboardPanel.add(heading);
+        dashboardPanel.add(Box.createVerticalStrut(15));
+        dashboardPanel.add(message);
 
-        // Search listener
-        searchButton.addActionListener(e -> {
+        centerPanel.add(dashboardPanel, BorderLayout.CENTER);
 
-            DonorSearchFrame searchFrame =
-                    new DonorSearchFrame();
+        centerPanel.revalidate();
+        centerPanel.repaint();
+    }
 
-            searchFrame.setVisible(true);
-        });
+    private void showPanel(Container panel) {
 
-        // Request listener
-        requestButton.addActionListener(e -> {
+        centerPanel.removeAll();
 
-            CreateRequestFrame requestFrame =
-                    new CreateRequestFrame();
+        panel.setVisible(true);
 
-            requestFrame.setVisible(true);
-        });
+        centerPanel.add(panel, BorderLayout.CENTER);
 
-        // Profile listener
-        profileButton.addActionListener(e -> {
-
-            HospitalProfileFrame profileFrame =
-                    new HospitalProfileFrame(userId);
-
-            profileFrame.setVisible(true);
-        });
-
-        // Tracking listener
-        trackingButton.addActionListener(e -> {
-
-            HospitalTrackingFrame trackingFrame =
-                    new HospitalTrackingFrame(userId);
-
-            trackingFrame.setVisible(true);
-        });
-
-        // Notification listener
-        notificationButton.addActionListener(e -> {
-
-            JOptionPane.showMessageDialog(
-                    this,
-                    "Notifications interface will be created next."
-            );
-        });
-
-        mainPanel.add(topPanel, BorderLayout.NORTH);
-        mainPanel.add(menuPanel, BorderLayout.WEST);
-        mainPanel.add(centerPanel, BorderLayout.CENTER);
-
-        add(mainPanel);
+        centerPanel.revalidate();
+        centerPanel.repaint();
     }
 }
