@@ -4,7 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-public class DonorProfileFrame extends JFrame {
+public class DonorProfileFrame extends JPanel {
 
     Color darkRed = new Color(150, 30, 45);
 
@@ -22,60 +22,39 @@ public class DonorProfileFrame extends JFrame {
 
         this.userId = userId;
 
-        setTitle("BloodLink - My Profile");
-        setSize(800, 550);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setLocationRelativeTo(null);
+        setLayout(new BorderLayout());
+        setBackground(Color.WHITE);
 
-        JPanel mainPanel =
-                new JPanel(new BorderLayout());
-
+        JPanel mainPanel = new JPanel(new BorderLayout());
         mainPanel.setBackground(Color.WHITE);
-
 
         // TOP BAR
 
-        JPanel topPanel =
-                new JPanel(new BorderLayout());
+        JPanel topPanel = new JPanel(new BorderLayout());
 
         topPanel.setBackground(darkRed);
 
-        topPanel.setPreferredSize(
-                new Dimension(800, 65)
-        );
+        topPanel.setPreferredSize(new Dimension(800, 65));
 
-        JLabel title =
-                new JLabel(
-                        "  BLOODLINK - MY PROFILE"
-                );
+        JLabel title = new JLabel("  BLOODLINK - MY PROFILE");
 
         title.setForeground(Color.WHITE);
 
-        title.setFont(
-                new Font(
-                        "Arial",
-                        Font.BOLD,
-                        22
-                )
-        );
+        title.setFont(new Font("Arial", Font.BOLD, 22));
 
-        topPanel.add(
-                title,
-                BorderLayout.WEST
-        );
+        topPanel.add(title, BorderLayout.WEST);
 
 
         // FORM PANEL
 
-        JPanel formPanel =
-                new JPanel(
-                        new GridLayout(
-                                7,
-                                2,
-                                10,
-                                15
-                        )
-                );
+        JPanel formPanel = new JPanel(
+                new GridLayout(
+                        7,
+                        2,
+                        10,
+                        15
+                )
+        );
 
         formPanel.setBackground(Color.WHITE);
 
@@ -89,75 +68,61 @@ public class DonorProfileFrame extends JFrame {
         );
 
 
-        JLabel nameLabel =
-                new JLabel("Name:");
+        JLabel nameLabel = new JLabel("Name:");
 
-        nameField =
-                new JTextField();
+        nameField = new JTextField();
 
 
-        JLabel ageLabel =
-                new JLabel("Age:");
+        JLabel ageLabel = new JLabel("Age:");
 
-        ageField =
-                new JTextField();
+        ageField = new JTextField();
 
 
-        JLabel genderLabel =
-                new JLabel("Gender:");
+        JLabel genderLabel = new JLabel("Gender:");
 
-        genderBox =
-                new JComboBox<>(
-                        new String[]{
-                                "Male",
-                                "Female",
-                                "Other"
-                        }
-                );
+        genderBox = new JComboBox<>(
+                new String[]{
+                        "Male",
+                        "Female",
+                        "Other"
+                }
+        );
 
 
-        JLabel bloodLabel =
-                new JLabel("Blood Group:");
+        JLabel bloodLabel = new JLabel("Blood Group:");
 
-        bloodBox =
-                new JComboBox<>(
-                        new String[]{
-                                "A+",
-                                "A-",
-                                "B+",
-                                "B-",
-                                "AB+",
-                                "AB-",
-                                "O+",
-                                "O-"
-                        }
-                );
+        bloodBox = new JComboBox<>(
+                new String[]{
+                        "A+",
+                        "A-",
+                        "B+",
+                        "B-",
+                        "AB+",
+                        "AB-",
+                        "O+",
+                        "O-"
+                }
+        );
 
 
-        JLabel phoneLabel =
-                new JLabel("Phone:");
+        JLabel phoneLabel = new JLabel("Phone:");
 
-        phoneField =
-                new JTextField();
+        phoneField = new JTextField();
 
 
-        JLabel locationLabel =
-                new JLabel("Location:");
+        JLabel locationLabel = new JLabel("Location:");
 
-        locationField =
-                new JTextField();
+        locationField = new JTextField();
 
 
-        JLabel availabilityLabel =
-                new JLabel("Availability:");
+        JLabel availabilityLabel = new JLabel("Availability:");
 
-        availabilityBox =
-                new JComboBox<>(
-                        new String[]{
-                                "Available",
-                                "Not Available"
-                        }
-                );
+        availabilityBox = new JComboBox<>(
+                new String[]{
+                        "Available",
+                        "Not Available"
+                }
+        );
 
 
         formPanel.add(nameLabel);
@@ -184,8 +149,7 @@ public class DonorProfileFrame extends JFrame {
 
         // SAVE BUTTON
 
-        JButton saveButton =
-                new JButton("SAVE PROFILE");
+        JButton saveButton = new JButton("SAVE PROFILE");
 
         saveButton.setBackground(darkRed);
 
@@ -201,14 +165,11 @@ public class DonorProfileFrame extends JFrame {
 
 
         saveButton.addActionListener(e -> {
-
             saveProfile();
-
         });
 
 
-        JPanel bottomPanel =
-                new JPanel();
+        JPanel bottomPanel = new JPanel();
 
         bottomPanel.setBackground(Color.WHITE);
 
@@ -233,10 +194,16 @@ public class DonorProfileFrame extends JFrame {
 
         add(mainPanel);
 
-
         // LOAD EXISTING PROFILE
 
         loadProfile();
+    }
+
+
+    // Compatibility method for the current DonorFrame navigation
+
+    public Container getContentPane() {
+        return this;
     }
 
 
@@ -295,9 +262,7 @@ public class DonorProfileFrame extends JFrame {
 
 
                     String availability =
-                            rs.getString(
-                                    "availability"
-                            );
+                            rs.getString("availability");
 
 
                     if (availability != null) {

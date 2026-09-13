@@ -1,16 +1,22 @@
 import javax.swing.*;
 import java.awt.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 
-public class DonorAvailabilityFrame extends JFrame {
+public class DonorAvailabilityFrame extends JPanel {
 
     Color darkRed = new Color(150, 30, 45);
 
-    public DonorAvailabilityFrame() {
+    private int userId;
+    private JComboBox<String> availabilityBox;
 
-        setTitle("BloodLink - Availability");
-        setSize(700, 450);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setLocationRelativeTo(null);
+    public DonorAvailabilityFrame(int userId) {
+
+        this.userId = userId;
+
+        setLayout(new BorderLayout());
+        setBackground(Color.WHITE);
 
         JPanel mainPanel = new JPanel(new BorderLayout());
         mainPanel.setBackground(Color.WHITE);
@@ -29,7 +35,9 @@ public class DonorAvailabilityFrame extends JFrame {
         // Center panel
         JPanel centerPanel = new JPanel();
         centerPanel.setBackground(Color.WHITE);
-        centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
+        centerPanel.setLayout(
+                new BoxLayout(centerPanel, BoxLayout.Y_AXIS)
+        );
 
         JLabel heading = new JLabel("Set Your Availability");
         heading.setFont(new Font("Arial", Font.BOLD, 25));
@@ -40,44 +48,173 @@ public class DonorAvailabilityFrame extends JFrame {
         );
         message.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        JComboBox<String> availabilityBox =
-                new JComboBox<>(new String[]{
+        availabilityBox = new JComboBox<>(
+                new String[]{
                         "Available",
                         "Not Available"
-                });
+                }
+        );
 
-        availabilityBox.setMaximumSize(new Dimension(250, 35));
-        availabilityBox.setAlignmentX(Component.CENTER_ALIGNMENT);
+        availabilityBox.setMaximumSize(
+                new Dimension(250, 35)
+        );
+
+        availabilityBox.setAlignmentX(
+                Component.CENTER_ALIGNMENT
+        );
+
+        // Load current availability
+        loadAvailability();
 
         JButton saveButton = new JButton("SAVE");
+
         saveButton.setBackground(darkRed);
         saveButton.setForeground(Color.WHITE);
-        saveButton.setFont(new Font("Arial", Font.BOLD, 14));
-        saveButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        saveButton.setFont(
+                new Font("Arial", Font.BOLD, 14)
+        );
 
-        saveButton.addActionListener(e -> {
+        saveButton.setAlignmentX(
+                Component.CENTER_ALIGNMENT
+        );
 
-            String status =
-                    (String) availabilityBox.getSelectedItem();
+        saveButton.addActionListener(e -> saveAvailability());
+
+        centerPanel.add(
+                Box.createVerticalStrut(70)
+        );
+
+        centerPanel.add(heading);
+
+        centerPanel.add(
+                Box.createVerticalStrut(15)
+        );
+
+        centerPanel.add(message);
+
+        centerPanel.add(
+                Box.createVerticalStrut(30)
+        );
+
+        centerPanel.add(availabilityBox);
+
+        centerPanel.add(
+                Box.createVerticalStrut(20)
+        );
+
+        centerPanel.add(saveButton);
+
+        mainPanel.add(
+                topPanel,
+                BorderLayout.NORTH
+        );
+
+        mainPanel.add(
+                centerPanel,
+                BorderLayout.CENTER
+        );
+
+        add(mainPanel);
+    }
+
+    // Load current availability from database
+
+    private void loadAvailability() {
+
+        String sql =
+                "SELECT availability " +
+                "FROM donors " +
+                "WHERE user_id = ?";
+
+        try (
+                Connection con = DBConnection.getConnection();
+                PreparedStatement pst = con.prepareStatement(sql)
+        ) {
+
+            pst.setInt(1, userId);
+
+            ResultSet rs = pst.executeQuery();
+
+            if (rs.next()) {
+
+                String availability =
+                        rs.getString("availability");
+
+                if ("AVAILABLE".equalsIgnoreCase(availability)) {
+                    availabilityBox.setSelectedItem("Available");
+                } else {
+                    availabilityBox.setSelectedItem("Not Available");
+                }
+            }
+
+        } catch (Exception e) {
 
             JOptionPane.showMessageDialog(
                     this,
-                    "Availability updated to: " + status
+                    "Error loading availability:\n" + e.getMessage()
             );
-        });
+        }
+    }
 
-        centerPanel.add(Box.createVerticalStrut(70));
-        centerPanel.add(heading);
-        centerPanel.add(Box.createVerticalStrut(15));
-        centerPanel.add(message);
-        centerPanel.add(Box.createVerticalStrut(30));
-        centerPanel.add(availabilityBox);
-        centerPanel.add(Box.createVerticalStrut(20));
-        centerPanel.add(saveButton);
+    // Save availability to database
 
-        mainPanel.add(topPanel, BorderLayout.NORTH);
-        mainPanel.add(centerPanel, BorderLayout.CENTER);
+    private void saveAvailability() {
 
-        add(mainPanel);
+        String selectedStatus =
+                (String) availabilityBox.getSelectedItem();
+
+        String databaseStatus;
+
+        if ("Available".equals(selectedStatus)) {
+            databaseStatus = "AVAILABLE";
+        } else {
+            databaseStatus = "NOT AVAILABLE";
+        }
+
+        String sql =
+                "UPDATE donors " +
+                "SET availability = ? " +
+                "WHERE user_id = ?";
+
+        try (
+                Connection con = DBConnection.getConnection();
+                PreparedStatement pst = con.prepareStatement(sql)
+        ) {
+
+            pst.setString(1, databaseStatus);
+            pst.setInt(2, userId);
+
+            int rowsUpdated = pst.executeUpdate();
+
+            if (rowsUpdated > 0) {
+
+                JOptionPane.showMessageDialog(
+                        this,
+                        "Availability updated to: "
+                                + selectedStatus
+                );
+
+            } else {
+
+                JOptionPane.showMessageDialog(
+                        this,
+                        "Donor record not found."
+                );
+            }
+
+        } catch (Exception e) {
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Error updating availability:\n"
+                            + e.getMessage()
+            );
+        }
+    }
+
+    // Compatibility method for current DonorFrame navigation
+
+    public Container getContentPane() {
+        return this;
     }
 }
